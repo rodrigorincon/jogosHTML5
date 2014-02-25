@@ -22,11 +22,14 @@ function inicializar(){
     desenhar(); 
 
     document.addEventListener('keydown', keyDown);
-    setInterval(gameLoop, 30);
 }
 
 function FisherYatesShuffle(){
     var counter = init.length, temp, index;
+    var retorno = new Array(counter);
+    //copia o vetor inicial pro novo vetor criado
+    for(i=0; i<counter; i++)
+        retorno[i] = init[i];
     // While there are elements in the array
     while (counter > 0) {
         // Pick a random index
@@ -34,18 +37,19 @@ function FisherYatesShuffle(){
         // Decrease counter by 1
         counter--;
         // And swap the last element with it
-        temp = init[counter];
-        init[counter] = init[index];
-        init[index] = temp;
+        temp = retorno[counter];
+        retorno[counter] = retorno[index];
+        retorno[index] = temp;
     }
+    return retorno;
 }
 
 function embaralhar(){
-    FisherYatesShuffle();
+    var vetor = FisherYatesShuffle();
     var k=0;
     for(i=0; i<3; i++){
         for(j=0; j<3; j++){
-            matriz[i][j] = init[k];
+            matriz[i][j] = vetor[k];
             k++;
         }
     }   
@@ -97,12 +101,31 @@ function keyDown(e){
         break;     
     }
     desenhar();
+    if(verificarVitoria())
+        resetar();
+}
+
+function verificarVitoria(){
+    var k=0, tamLinha = Math.sqrt(init.length);
+    for(i=0; i<tamLinha; i++){
+        for(j=0; j<tamLinha; j++){
+            if(matriz[i][j] != init[k])
+              return false;
+            k++;
+        }
+    }
+    if(k == init.length)
+        return true;
+    return false;
+}
+
+function resetar(){
+    alert("Parabéns! Você conseguiu com "+numJogadas+" pontos.");
+    numJogadas=0;
+    embaralhar();
+    desenhar();
 }
 
 function resolver(){
     //por o codigo aki
-}
-
-function gameLoop(){
-     
 }
