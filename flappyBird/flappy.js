@@ -1,6 +1,6 @@
 var jogAlt, jogLarg, jogX, jogY, velX, velY;
 var cano1X, cano1Y, cano1Larg, cano1Alt, cano2X, cano2Y, cano2Larg, cano2Alt, espacoCano;
-var subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
+var pontosJogador, numCanos, subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
 var INIT = true;
          
 function inicializar(){
@@ -17,22 +17,24 @@ function inicializar(){
     
     cano1X = cano2X = canvas.width;
     cano1Larg = cano2Larg = 40;
-    espacoCano = 80;
+    espacoCano = 120;
     cano1Y = 0;
     defineTamanhoCano();
     
+    pontosJogador = 0;
+    numCanos = 1;
     subir = false;
     countUp = 1;
-    MAX_COUNT_UP = 3;
+    MAX_COUNT_UP = 6;
     MAX_COUNT_DOWN = 3;
 
     if(INIT){
-        document.addEventListener('keydown', keyDown);
+        document.addEventListener('keyup', keyUp);
         setInterval(gameLoop, 30);
     }
 }
 
-function keyDown(e){
+function keyUp(e){
     if(e.keyCode == 32){
          subir = true;
          countUp = 1;
@@ -52,6 +54,9 @@ function desenhar(){
     //canos
     context.fillRect(cano1X, cano1Y, cano1Larg, cano1Alt);
     context.fillRect(cano2X, cano2Y, cano2Larg, cano2Alt);
+    //pontuacao
+    context.font = "32pt Tahoma";
+    context.fillText(pontosJogador, canvas.width - 70, 50);
 }
 
 function verificaColisao(){
@@ -70,6 +75,12 @@ function verificaColisao(){
     return false; 
 }
 
+function verificaPontuacao(){
+    if(jogY > cano1Y+cano1Alt && jogY+jogAlt < cano2Y  && jogX > cano1X && jogX < cano1X+cano1Larg){
+        if(pontosJogador < numCanos)
+            pontosJogador++;
+    }
+}
 
 function movimenta(){
     //movimenta os canos
@@ -77,6 +88,7 @@ function movimenta(){
         cano1X =  canvas.width;
         cano2X =  canvas.width;
         defineTamanhoCano();
+        numCanos++;
     }else{
         cano1X -=  velX;
         cano2X -=  velX;
@@ -91,8 +103,8 @@ function movimenta(){
         }
     }else{
         jogY += velY*countUp/2;
-        if(countUp<=MAX_COUNT_DOWN)
-           countUp++;     
+        if(countUp<MAX_COUNT_DOWN)
+          countUp++;     
     }
 }
 
@@ -104,6 +116,7 @@ function gameLoop(){
         inicializar();
         return;
     }
+    verificaPontuacao();
     movimenta();
     desenhar();
 }
