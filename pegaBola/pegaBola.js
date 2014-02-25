@@ -1,25 +1,67 @@
-                    //VARIAVEIS IMPORTANTES
+                   //VARIAVEIS IMPORTANTES
 
 var barraAltura, barraLargura, jogadorPosicaoX, velocidadeJogador;
-var bolaDiametro, bolaPosX, bolaPosY, velocidadeBolaY, velocidadeBolaX, direcaoBola;
-var pontosJogador, colisao;
-var mover, lado;   
-                  //FUNÇÕES DE INICIALIZAÇÃO
+var pontosJogador, bolas;
+var mover, lado;
+
+function Bola()
+{       
+    this.bolaDiametro = 10;
+    this.bolaPosX = Math.random() * 600;
+    this.bolaPosY = -10;
+    this.velocidadeBolaY = 10;
+    this.velocidadeBolaX = (Math.random() * 2 <= 1) ? -10 : 10;
+    this.colisao = false;
+    
+    this.inicializa = function(){
+        this.bolaPosX = Math.random() * 600;
+        //determina a direÃ§Ã£o em que a bola vai ir inicialmente
+        if(Math.random() * 2 <= 1)
+            this.velocidadeBolaX = -10;
+        else
+            this.velocidadeBolaX = 10;
+        this.bolaPosY = -10;
+        this.colisao = false;
+    };
+
+    this.mover = function(){
+        if(this.bolaPosY <= canvas.height) //movimento normal
+        {
+            this.bolaPosY += this.velocidadeBolaY;
+            if(this.bolaPosX <= 0 || this.bolaPosX >= canvas.width) //faz quicar nas bordas da tela
+               this.velocidadeBolaX = -this.velocidadeBolaX;
+            this.bolaPosX += this.velocidadeBolaX;
+        }else //quando chega no final
+            this.inicializa();
+    };
+    
+    this.desenhar = function(){
+        context.beginPath();
+        context.arc(this.bolaPosX, this.bolaPosY, this.bolaDiametro, 0, Math.PI * 2, true);
+        context.fill();
+    };
+    
+    this.verificaColisao = function(){
+        if((this.bolaPosX > jogadorPosicaoX && this.bolaPosX < jogadorPosicaoX + barraLargura) && this.bolaPosY >= canvas.height - barraAltura && this.colisao == false){
+            pontosJogador++;
+            this.colisao = true;
+        }
+    };
+}
+
+                  //FUNÃ‡Ã•ES DE INICIALIZAÃ‡ÃƒO
                                      
-//inicializa as constantes, define o valor inicial da pontuação e variaveis de controle e define os eventos   
+//inicializa as constantes, define o valor inicial da pontuaÃ§Ã£o e variaveis de controle e define os eventos
 function inicializar(){
-    //incializa o tamanho e posição da barra
+    //incializa o tamanho e posiÃ§Ã£o da barra
     barraAltura = 15;
-    barraLargura = 90; 
+    barraLargura = 90;
     jogadorPosicaoX = (canvas.width - barraLargura) / 2;
     velocidadeJogador = 20;
-    //incializa o tamanho e posição da bola
-    bolaDiametro = 10;
-    velocidadeBolaY = 10;
-    iniciaBola();
-    //inicializa os pontos do jogador e variáveis de controle
-    pontosJogador = 0;
-    colisao = false;
+    //incializa o vetor de bola e jÃ¡ cria a primeira
+    bolas = new Array(new Bola());
+    //inicializa os pontos do jogador e variÃ¡veis de controle
+    pontosJogador = 0;  
     mover=false;
     //recupera a tela do html
     canvas = document.getElementById("canvas");
@@ -30,33 +72,21 @@ function inicializar(){
     setInterval(gameLoop, 30);
 }
 
-//define os valores da bola sempre que ela volta pro inicio
-iniciaBola(){
-    bolaPosX = Math.random() * 600;
-    //determina a direção em que a bola vai ir inicialmente
-    if(Math.random() * 2 <= 1)
-        velocidadeBolaX = -10;
-    else
-        velocidadeBolaX = 10;
-    bolaPosY = -10;
-    colisao = false;
-}
+          //FUNÃ‡Ã•ES DE EVENTOS DE TECLADO
 
-          //FUNÇÕES DE EVENTOS DE TECLADO
-
-//diz que ao apertar um botão deve mover o jogador
+//diz que ao apertar um botÃ£o deve mover o jogador
 function keyDown(e){
     mover = true;
     lado = e.keyCode;
 }
-//diz que ao soltar o botão deve parar o jogador (usado pois só com o keyDown ele empacava por 16 ciclos quando começva a andar)
+//diz que ao soltar o botÃ£o deve parar o jogador (usado pois sÃ³ com o keyDown ele empacava por 16 ciclos quando comeÃ§va a andar)
 function keyUp(e){
     mover = false;
 }
 
-          //FUNÇÕES DE MOVIMENTO
+          //FUNÃ‡Ã•ES DE MOVIMENTO
           
-//move a barra para o lado certo e só quando o botão está pressionado
+//move a barra para o lado certo e sÃ³ quando o botÃ£o estÃ¡ pressionado
 function moverBarra(){
   if(mover){
       switch(lado){
@@ -64,52 +94,35 @@ function moverBarra(){
         if(jogadorPosicaoX > 0)
              jogadorPosicaoX -= velocidadeJogador;
         break;
-      case 39: 
+      case 39:
         if(jogadorPosicaoX < (canvas.width - barraLargura))
              jogadorPosicaoX += velocidadeJogador;
-        break;   
+        break;
       }
    }
 }
 
-function moverBola(){
-    if(bolaPosY <= canvas.height)      //movimento normal
-    {
-        bolaPosY += velocidadeBolaY;
-        if(bolaPosX <= 0 || bolaPosX >= canvas.width)    //faz quicar nas bordas da tela
-           velocidadeBolaX = -velocidadeBolaX;
-        bolaPosX += velocidadeBolaX;
-    }else                            //quando chega no final
-        iniciaBola();
-}
-
-            //FUNÇÕES RESTANTES
+            //FUNÃ‡Ã•ES RESTANTES
 
 function desenha(){
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillRect(jogadorPosicaoX, canvas.height - barraAltura, barraLargura, barraAltura);
+    
+    bolas.forEach(function(bola,index){
+        bola.desenhar();
+    }); 
+    
     context.font = "32pt Tahoma";
     context.fillText(pontosJogador, canvas.width - 70, 50);
-      
-    context.beginPath();
-    context.arc(bolaPosX, bolaPosY, bolaDiametro, 0, Math.PI * 2, true);
-    context.fill();
-}
-
-function verificaColisao(){
-    if((bolaPosX > jogadorPosicaoX && bolaPosX < jogadorPosicaoX + barraLargura) && bolaPosY >= canvas.height - barraAltura && colisao == false){
-        pontosJogador++;
-        colisao = true;
-    } 
 }
 
 function gameLoop(){
     desenha();
 
-    moverBarra();
-
-    moverBola();
-    
-    verificaColisao();
-
+    moverBarra(); 
+        
+    bolas.forEach(function(bola,index){
+        bola.mover();
+        bola.verificaColisao(); 
+    });  
 }
