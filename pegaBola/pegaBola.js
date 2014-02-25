@@ -10,7 +10,7 @@ function inicializar(){
     
     bolaDiametro = 10;
     bolaPosX = canvas.width / 2;
-    bolaPosY = 50;
+    bolaPosY = -10;
     velocidadeBolaY = 10;
     
     canvas = document.getElementById("canvas");
@@ -23,6 +23,15 @@ function inicializar(){
 }
 
 function keyDown(e){
+
+    if(e.keyCode == 37){
+        if(jogadorPosicaoX > 0)
+          jogadorPosicaoX -= velocidadeJogador;
+    }
+    if(e.keyCode == 39){
+        if(jogadorPosicaoX < (canvas.width - barraLargura))
+          jogadorPosicaoX += velocidadeJogador;
+    }
     
 }
 
@@ -34,6 +43,12 @@ function gameLoop(){
     context.beginPath();
     context.arc(bolaPosX, bolaPosY, bolaDiametro, 0, Math.PI * 2, true);
     context.fill();
-
+    
+    if(bolaPosY <= canvas.height)
+      bolaPosY += velocidadeBolaY;
+    else{
+        bolaPosX = Math.random() * 600; 
+        bolaPosY = -10;
+    }
  
 }
