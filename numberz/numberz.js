@@ -1,6 +1,6 @@
 var init = ['1','2','3','4','5','6','7','8',' '];
 var matriz=[ [,,],[,,],[,,] ];
-var vazioI, vazioJ;
+var vazioI, vazioJ, numJogadas;
         
 function inicializar(){
     
@@ -18,6 +18,7 @@ function inicializar(){
             }
         }
     } 
+    numJogadas = 0;
     desenhar(); 
 
     document.addEventListener('keydown', keyDown);
@@ -56,6 +57,7 @@ function desenhar(){
     for(i=0;i<3;i++)
       for(j=0;j<3;j++)
         context.fillText(matriz[i][j], j*100, i*100+50);
+    document.getElementById("jogadas").innerHTML = numJogadas;
 }
 
 function keyDown(e){
@@ -65,14 +67,16 @@ function keyDown(e){
         if(vazioJ!=2){
             matriz[vazioI][vazioJ] = matriz[vazioI][vazioJ+1];
             matriz[vazioI][vazioJ+1] = ' ';
-            vazioJ +=1;  
+            vazioJ +=1; 
+            numJogadas++;  
         }
         break;
     case 38:
         if(vazioI!=2){
             matriz[vazioI][vazioJ] = matriz[vazioI+1][vazioJ];
             matriz[vazioI+1][vazioJ] = ' ';
-            vazioI +=1;   
+            vazioI +=1; 
+            numJogadas++;   
         }
         break;
     case 39:
@@ -80,17 +84,23 @@ function keyDown(e){
             matriz[vazioI][vazioJ] = matriz[vazioI][vazioJ-1];
             matriz[vazioI][vazioJ-1] = ' ';
             vazioJ -=1;  
+            numJogadas++;  
         }
         break;
     case 40:
         if(vazioI!=0){
             matriz[vazioI][vazioJ] = matriz[vazioI-1][vazioJ];
             matriz[vazioI-1][vazioJ] = ' ';
-            vazioI -=1;  
+            vazioI -=1; 
+            numJogadas++;   
         }
         break;     
     }
     desenhar();
+}
+
+function resolver(){
+    //por o codigo aki
 }
 
 function gameLoop(){
