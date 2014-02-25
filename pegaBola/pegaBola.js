@@ -1,7 +1,7 @@
                    //VARIAVEIS IMPORTANTES
 
 var barraAltura, barraLargura, jogadorPosicaoX, velocidadeJogador;
-var pontosJogador, bolas;
+var pontosJogador, totalBolas, bolas;
 var mover, lado;
 
 function Bola()
@@ -11,7 +11,7 @@ function Bola()
     this.bolaPosY = -10;
     this.velocidadeBolaY = 10;
     this.velocidadeBolaX = (Math.random() * 2 <= 1) ? -10 : 10;
-    this.colisao = false;
+    this.destruir = false;
     
     this.inicializa = function(){
         this.bolaPosX = Math.random() * 600;
@@ -21,7 +21,7 @@ function Bola()
         else
             this.velocidadeBolaX = 10;
         this.bolaPosY = -10;
-        this.colisao = false;
+        this.destruir = false;
     };
 
     this.mover = function(){
@@ -32,7 +32,7 @@ function Bola()
                this.velocidadeBolaX = -this.velocidadeBolaX;
             this.bolaPosX += this.velocidadeBolaX;
         }else //quando chega no final
-            this.inicializa();
+            this.destruir = true;
     };
     
     this.desenhar = function(){
@@ -42,9 +42,9 @@ function Bola()
     };
     
     this.verificaColisao = function(){
-        if((this.bolaPosX > jogadorPosicaoX && this.bolaPosX < jogadorPosicaoX + barraLargura) && this.bolaPosY >= canvas.height - barraAltura && this.colisao == false){
+        if((this.bolaPosX > jogadorPosicaoX && this.bolaPosX < jogadorPosicaoX + barraLargura) && this.bolaPosY >= canvas.height - barraAltura && this.destruir == false){
             pontosJogador++;
-            this.colisao = true;
+            this.destruir = true;
         }
     };
 }
@@ -61,7 +61,7 @@ function inicializar(){
     //incializa o vetor de bola e já cria a primeira
     bolas = new Array(new Bola());
     //inicializa os pontos do jogador e variáveis de controle
-    pontosJogador = 0;  
+    pontosJogador = totalBolas = 0;  
     mover=false;
     //recupera a tela do html
     canvas = document.getElementById("canvas");
@@ -70,6 +70,7 @@ function inicializar(){
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
     setInterval(gameLoop, 30);
+    setInterval(criarBola, 1000);
 }
 
           //FUNÇÕES DE EVENTOS DE TECLADO
@@ -113,7 +114,7 @@ function desenha(){
     }); 
     
     context.font = "32pt Tahoma";
-    context.fillText(pontosJogador, canvas.width - 70, 50);
+    context.fillText(pontosJogador+"/"+totalBolas, canvas.width - 140, 50);
 }
 
 function gameLoop(){
@@ -123,6 +124,14 @@ function gameLoop(){
         
     bolas.forEach(function(bola,index){
         bola.mover();
-        bola.verificaColisao(); 
+        bola.verificaColisao();
+        if(bola.destruir){
+            totalBolas++;
+            bolas.splice(index, 1);
+        }  
     });  
+}
+
+function criarBola(){
+    bolas.push(new Bola());
 }
