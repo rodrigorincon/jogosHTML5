@@ -1,6 +1,6 @@
 var jogAlt, jogLarg, jogX, jogY, velX, velY;
 var cano1X, cano1Y, cano1Larg, cano1Alt, cano2X, cano2Y, cano2Larg, cano2Alt, espacoCano;
-var subir, countUp, MAX_COUNT_UP;
+var subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
 var INIT = true;
          
 function inicializar(){
@@ -22,8 +22,9 @@ function inicializar(){
     defineTamanhoCano();
     
     subir = false;
-    countUp = 0;
-    MAX_COUNT_UP = 2;
+    countUp = 1;
+    MAX_COUNT_UP = 3;
+    MAX_COUNT_DOWN = 3;
 
     if(INIT){
         document.addEventListener('keydown', keyDown);
@@ -34,7 +35,7 @@ function inicializar(){
 function keyDown(e){
     if(e.keyCode == 32){
          subir = true;
-         countUp = 0;
+         countUp = 1;
     }
 }
 
@@ -82,14 +83,16 @@ function movimenta(){
     }
     //movimenta o jogador
     if(subir){
-        jogY -= velY;
+        jogY -= velY*(MAX_COUNT_UP-countUp);
         countUp++;
         if(countUp == MAX_COUNT_UP){
-            countUp = 0;
+            countUp = 1;
             subir = false;
         }
     }else{
-        jogY += velY;    
+        jogY += velY*countUp/2;
+        if(countUp<=MAX_COUNT_DOWN)
+           countUp++;     
     }
 }
 
