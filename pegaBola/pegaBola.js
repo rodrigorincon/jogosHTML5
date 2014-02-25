@@ -4,26 +4,34 @@ var barraAltura, barraLargura, jogadorPosicaoX, velocidadeJogador;
 var pontosJogador, totalBolas, bolas;
 var mover, lado;
 
-function Bola()
-{       
-    this.bolaDiametro = 10;
-    this.bolaPosX = Math.random() * 600;
-    this.bolaPosY = -10;
-    this.velocidadeBolaY = 10;
-    this.velocidadeBolaX = (Math.random() * 2 <= 1) ? -10 : 10;
-    this.destruir = false;
-    
-    this.inicializa = function(){
-        this.bolaPosX = Math.random() * 600;
-        //determina a direção em que a bola vai ir inicialmente
-        if(Math.random() * 2 <= 1)
-            this.velocidadeBolaX = -10;
-        else
-            this.velocidadeBolaX = 10;
-        this.bolaPosY = -10;
-        this.destruir = false;
-    };
+var pontuacoes = new Array(
+    {'diametro' : 5, 'pontos' : 5, 'velocidade' : 17},
+    {'diametro' : 10, 'pontos' : 3, 'velocidade' : 10},
+    {'diametro' : 15, 'pontos' : 1, 'velocidade' : 7}
+);  
 
+function Bola()
+{     
+    this.inicializa = function(){   
+        var indice;
+        //calculo para determinar a probabilidade de vir cada bola (bolas de + pontos são mais dificeis de ocorrer)
+        var porcent = Math.round(Math.random()*99);  // porcent varia de 0 à 99
+        if(porcent < 15)
+           indice = 0;
+        else if(porcent >= 15 && porcent < 55)
+            indice = 1;
+        else
+            indice = 2;  
+        //setta os valores nos atributos
+        this.bolaDiametro = pontuacoes[indice]['diametro'];
+        this.bolaPosX = Math.random() * 600;
+        this.bolaPosY = -10;
+        this.velocidadeBolaY = pontuacoes[indice]['velocidade'];
+        this.velocidadeBolaX = (Math.random() * 2 <= 1) ? -this.velocidadeBolaY : this.velocidadeBolaY;
+        this.pontos =  pontuacoes[indice]['pontos'];
+        this.destruir = false;         
+    };
+    
     this.mover = function(){
         if(this.bolaPosY <= canvas.height) //movimento normal
         {
@@ -43,10 +51,20 @@ function Bola()
     
     this.verificaColisao = function(){
         if((this.bolaPosX > jogadorPosicaoX && this.bolaPosX < jogadorPosicaoX + barraLargura) && this.bolaPosY >= canvas.height - barraAltura && this.destruir == false){
-            pontosJogador++;
+            pontosJogador+=this.pontos;
             this.destruir = true;
         }
     };
+ 
+    this.bolaDiametro;
+    this.bolaPosX;
+    this.bolaPosY;
+    this.velocidadeBolaY;
+    this.velocidadeBolaX;
+    this.destruir;
+    this.pontos;
+    
+    this.inicializa();
 }
 
                   //FUNÇÕES DE INICIALIZAÇÃO
@@ -114,7 +132,7 @@ function desenha(){
     }); 
     
     context.font = "32pt Tahoma";
-    context.fillText(pontosJogador+"/"+totalBolas, canvas.width - 140, 50);
+    context.fillText(pontosJogador+"/"+totalBolas, canvas.width - 200, 50);
 }
 
 function gameLoop(){
@@ -126,7 +144,7 @@ function gameLoop(){
         bola.mover();
         bola.verificaColisao();
         if(bola.destruir){
-            totalBolas++;
+            totalBolas+=bola.pontos;
             bolas.splice(index, 1);
         }  
     });  
