@@ -1,5 +1,5 @@
 var barraAltura, barraLargura, jogadorPosicaoX, velocidadeJogador;
-var bolaDiametro, bolaPosX, bolaPosY, velocidadeBolaY;
+var bolaDiametro, bolaPosX, bolaPosY, velocidadeBolaY, velocidadeBolaX, direcaoBola;
          
 function inicializar(){
 
@@ -45,9 +45,17 @@ function gameLoop(){
     context.fill();
     
     if(bolaPosY <= canvas.height)
-      bolaPosY += velocidadeBolaY;
-    else{
-        bolaPosX = Math.random() * 600; 
+    {
+        bolaPosY += velocidadeBolaY;
+        if(bolaPosX <= 0 || bolaPosX >= canvas.width)
+           velocidadeBolaX = -velocidadeBolaX;
+        bolaPosX += velocidadeBolaX;
+    }else{
+        bolaPosX = Math.random() * 600;
+        if(Math.random() * 2 <= 1)
+            velocidadeBolaX = -10;
+        else
+            velocidadeBolaX = 10; 
         bolaPosY = -10;
     }
  
