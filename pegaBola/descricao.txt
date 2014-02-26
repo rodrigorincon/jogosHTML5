@@ -1,1 +1,7 @@
-﻿pegue todas as bolas que caem do céu sem deixar cair nenhuma no chão.
+Pegue todas as bolas que caem do céu antes que encostem no chão. Quanto menor e mais rápida mais pontos você ganha.
+Se você perder 50 pontos, o jogo acaba. Os melhores resultados são guardados no ranking.
+
+===
+Teclas utilizadas:
+
+setas direcionais (só esquerda e direita): move o jogador para os lados.
