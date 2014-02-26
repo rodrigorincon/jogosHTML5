@@ -1,23 +1,44 @@
 jogosHTML5
 ==========
 
-Repositório com uma série de jogos simples para quem está aprendendo a programar em javascript usando canvas.
+Repositório com uma série de jogos simples para quem está aprendendo a programar em javascript usando canvas. Acompanhe o passo-a-passo da construção deles através do histórico de commits e aprenda a construir o seu prório jogo.
 
 ===
-<h2>Controle de Versão</h2>
+###Controle de Versão
 
 As versões jogáveis dos códigos (1.0, 2.0 ...) encontra-se na branch master, as demais branchs são para o desenvolvimento das mesmas.
 
 ===
-<h2>Jogos terminados</h2>
+###Jogos terminados
 
 Nenhum ainda.
 
-<h2>Jogos em andamento</h2>
+###Jogos em andamento
 
-Flappy Bird, Numberz, Pega Bola.
+* Flappy Bird
+* Numberz
+* Pega Bola.
 
 ===
-<h2>Arte</h2>
+###Arte
 
 Nenhum ainda.
+
+===
+###Arquitetura
+
+####Frameworks e APIs utilizadas
+* HMLT5
+  * Nenhum
+* Javascript
+  * Nenhum ainda
+* CSS
+  * Nenhum ainda
+
+####Padrões de codificação
+* HTML
+  * A descrever
+* Javascript
+  * A descrever
+* CSS
+  * A descrever
