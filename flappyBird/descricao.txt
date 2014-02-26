@@ -1,1 +1,9 @@
 Mantenha o pássaro no ar apertando a tecla de espaço e não o deixe encostar no chão nem nos canos.
+Os melhores resultados são gravados num ranking.
+
+===
+Teclas utilizadas:
+
+espaço: move o pássaro para cima.
+
+
