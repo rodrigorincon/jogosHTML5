@@ -1,25 +1,85 @@
-                    //VARIAVEIS IMPORTANTES
+                   //VARIAVEIS IMPORTANTES
 
 var barraAltura, barraLargura, jogadorPosicaoX, velocidadeJogador;
-var bolaDiametro, bolaPosX, bolaPosY, velocidadeBolaY, velocidadeBolaX, direcaoBola;
-var pontosJogador, colisao;
-var mover, lado;   
-                  //FUN«’ES DE INICIALIZA«√O
+var pontosJogador, totalBolas, bolas;
+var mover, lado;
+
+var pontuacoes = new Array(
+    {'diametro' : 5, 'pontos' : 5, 'velocidade' : 17},
+    {'diametro' : 10, 'pontos' : 3, 'velocidade' : 10},
+    {'diametro' : 15, 'pontos' : 1, 'velocidade' : 7}
+);  
+
+function Bola()
+{     
+    this.inicializa = function(){   
+        var indice;
+        //calculo para determinar a probabilidade de vir cada bola (bolas de + pontos s√£o mais dificeis de ocorrer)
+        var porcent = Math.round(Math.random()*99);  // porcent varia de 0 √† 99
+        if(porcent < 15)
+           indice = 0;
+        else if(porcent >= 15 && porcent < 55)
+            indice = 1;
+        else
+            indice = 2;  
+        //setta os valores nos atributos
+        this.bolaDiametro = pontuacoes[indice]['diametro'];
+        this.bolaPosX = Math.random() * 600;
+        this.bolaPosY = -10;
+        this.velocidadeBolaY = pontuacoes[indice]['velocidade'];
+        this.velocidadeBolaX = (Math.random() * 2 <= 1) ? -this.velocidadeBolaY : this.velocidadeBolaY;
+        this.pontos =  pontuacoes[indice]['pontos'];
+        this.destruir = false;         
+    };
+    
+    this.mover = function(){
+        if(this.bolaPosY <= canvas.height) //movimento normal
+        {
+            this.bolaPosY += this.velocidadeBolaY;
+            if(this.bolaPosX <= 0 || this.bolaPosX >= canvas.width) //faz quicar nas bordas da tela
+               this.velocidadeBolaX = -this.velocidadeBolaX;
+            this.bolaPosX += this.velocidadeBolaX;
+        }else //quando chega no final
+            this.destruir = true;
+    };
+    
+    this.desenhar = function(){
+        context.beginPath();
+        context.arc(this.bolaPosX, this.bolaPosY, this.bolaDiametro, 0, Math.PI * 2, true);
+        context.fill();
+    };
+    
+    this.verificaColisao = function(){
+        if((this.bolaPosX > jogadorPosicaoX && this.bolaPosX < jogadorPosicaoX + barraLargura) && this.bolaPosY >= canvas.height - barraAltura && this.destruir == false){
+            pontosJogador+=this.pontos;
+            this.destruir = true;
+        }
+    };
+ 
+    this.bolaDiametro;
+    this.bolaPosX;
+    this.bolaPosY;
+    this.velocidadeBolaY;
+    this.velocidadeBolaX;
+    this.destruir;
+    this.pontos;
+    
+    this.inicializa();
+}
+
+                  //FUN√á√ïES DE INICIALIZA√á√ÉO
                                      
-//inicializa as constantes, define o valor inicial da pontuaÁ„o e variaveis de controle e define os eventos   
+//inicializa as constantes, define o valor inicial da pontua√ß√£o e variaveis de controle e define os eventos
 function inicializar(){
-    //incializa o tamanho e posiÁ„o da barra
+    //incializa o tamanho e posi√ß√£o da barra
     barraAltura = 15;
-    barraLargura = 90; 
+    barraLargura = 90;
     jogadorPosicaoX = (canvas.width - barraLargura) / 2;
     velocidadeJogador = 20;
-    //incializa o tamanho e posiÁ„o da bola
-    bolaDiametro = 10;
-    velocidadeBolaY = 10;
-    iniciaBola();
-    //inicializa os pontos do jogador e vari·veis de controle
-    pontosJogador = 0;
-    colisao = false;
+    //incializa o vetor de bola e j√° cria a primeira
+    bolas = new Array(new Bola());
+    //inicializa os pontos do jogador e vari√°veis de controle
+    pontosJogador = totalBolas = 0;  
     mover=false;
     //recupera a tela do html
     canvas = document.getElementById("canvas");
@@ -28,35 +88,24 @@ function inicializar(){
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
     setInterval(gameLoop, 30);
+    setInterval(criarBola, 1000);
 }
 
-//define os valores da bola sempre que ela volta pro inicio
-iniciaBola(){
-    bolaPosX = Math.random() * 600;
-    //determina a direÁ„o em que a bola vai ir inicialmente
-    if(Math.random() * 2 <= 1)
-        velocidadeBolaX = -10;
-    else
-        velocidadeBolaX = 10;
-    bolaPosY = -10;
-    colisao = false;
-}
+          //FUN√á√ïES DE EVENTOS DE TECLADO
 
-          //FUN«’ES DE EVENTOS DE TECLADO
-
-//diz que ao apertar um bot„o deve mover o jogador
+//diz que ao apertar um bot√£o deve mover o jogador
 function keyDown(e){
     mover = true;
     lado = e.keyCode;
 }
-//diz que ao soltar o bot„o deve parar o jogador (usado pois sÛ com o keyDown ele empacava por 16 ciclos quando comeÁva a andar)
+//diz que ao soltar o bot√£o deve parar o jogador (usado pois s√≥ com o keyDown ele empacava por 16 ciclos quando come√ßva a andar)
 function keyUp(e){
     mover = false;
 }
 
-          //FUN«’ES DE MOVIMENTO
+          //FUN√á√ïES DE MOVIMENTO
           
-//move a barra para o lado certo e sÛ quando o bot„o est· pressionado
+//move a barra para o lado certo e s√≥ quando o bot√£o est√° pressionado
 function moverBarra(){
   if(mover){
       switch(lado){
@@ -64,52 +113,43 @@ function moverBarra(){
         if(jogadorPosicaoX > 0)
              jogadorPosicaoX -= velocidadeJogador;
         break;
-      case 39: 
+      case 39:
         if(jogadorPosicaoX < (canvas.width - barraLargura))
              jogadorPosicaoX += velocidadeJogador;
-        break;   
+        break;
       }
    }
 }
 
-function moverBola(){
-    if(bolaPosY <= canvas.height)      //movimento normal
-    {
-        bolaPosY += velocidadeBolaY;
-        if(bolaPosX <= 0 || bolaPosX >= canvas.width)    //faz quicar nas bordas da tela
-           velocidadeBolaX = -velocidadeBolaX;
-        bolaPosX += velocidadeBolaX;
-    }else                            //quando chega no final
-        iniciaBola();
-}
-
-            //FUN«’ES RESTANTES
+            //FUN√á√ïES RESTANTES
 
 function desenha(){
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillRect(jogadorPosicaoX, canvas.height - barraAltura, barraLargura, barraAltura);
+    
+    bolas.forEach(function(bola,index){
+        bola.desenhar();
+    }); 
+    
     context.font = "32pt Tahoma";
-    context.fillText(pontosJogador, canvas.width - 70, 50);
-      
-    context.beginPath();
-    context.arc(bolaPosX, bolaPosY, bolaDiametro, 0, Math.PI * 2, true);
-    context.fill();
-}
-
-function verificaColisao(){
-    if((bolaPosX > jogadorPosicaoX && bolaPosX < jogadorPosicaoX + barraLargura) && bolaPosY >= canvas.height - barraAltura && colisao == false){
-        pontosJogador++;
-        colisao = true;
-    } 
+    context.fillText(pontosJogador+"/"+totalBolas, canvas.width - 200, 50);
 }
 
 function gameLoop(){
     desenha();
 
-    moverBarra();
+    moverBarra(); 
+        
+    bolas.forEach(function(bola,index){
+        bola.mover();
+        bola.verificaColisao();
+        if(bola.destruir){
+            totalBolas+=bola.pontos;
+            bolas.splice(index, 1);
+        }  
+    });  
+}
 
-    moverBola();
-    
-    verificaColisao();
-
+function criarBola(){
+    bolas.push(new Bola());
 }
