@@ -68,8 +68,8 @@ function Bola()
 }
 
                   //FUNÇÕES DE INICIALIZAÇÃO
-                                     
-//inicializa as constantes, define o valor inicial da pontuação e variaveis de controle e define os eventos
+				  
+//inicializa as constantes, define o valor inicial da pontuação e variaveis de controle
 function inicializar(){
     //incializa o tamanho e posição da barra
     barraAltura = 15;
@@ -81,14 +81,20 @@ function inicializar(){
     //inicializa os pontos do jogador e variáveis de controle
     pontosJogador = totalBolas = 0;  
     mover=false;
+}
+
+//define os eventos e chama a função que inicializa as variaveis
+function start(){
     //recupera a tela do html
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
-    //define os eventos
-    document.addEventListener('keydown', keyDown);
-    document.addEventListener('keyup', keyUp);
-    setInterval(gameLoop, 30);
-    setInterval(criarBola, 1000);
+	//inicializa as variaveis do jogo
+	inicializar();
+	//define os eventos
+	document.addEventListener('keydown', keyDown);
+	document.addEventListener('keyup', keyUp);
+	setInterval(gameLoop, 30);
+	setInterval(criarBola, 1000);
 }
 
           //FUNÇÕES DE EVENTOS DE TECLADO
@@ -136,7 +142,15 @@ function desenha(){
 }
 
 function gameLoop(){
-    desenha();
+    if(totalBolas >= pontosJogador+50){
+		alert("game over!");
+		bolas.splice(0, bolas.length);
+		alert(bolas.length);
+		bolas = null;
+		inicializar();
+	}
+	
+	desenha();
 
     moverBarra(); 
         
