@@ -1,37 +1,90 @@
-var jogAlt, jogLarg, jogX, jogY, velX, velY;
-var cano1X, cano1Y, cano1Larg, cano1Alt, cano2X, cano2Y, cano2Larg, cano2Alt, espacoCano;
-var pontosJogador, numCanos, subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
-var INIT = true;
-         
+//variaveis que controlam o jogador
+var jogAlt, jogLarg, jogX, jogY, velY;
+//variaveis de controle em geral
+var pontosJogador, INIT = true, distanciaCanosX;
+//vetor com todos os canos da tela
+var canos;
+//variaveis de controle do movimento do jogador
+var subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
+
+function Cano(){
+
+	//inicializa só as constantes e chama a função que inicializa as demais
+	this.init = function(){
+	    this.canoX = canvas.width;
+		this.canoLarg = 40;
+		this.espacoCano = 120;
+		this.cano1Y = 0;
+		this.velX = 5;
+		this.jaPassou = false;
+		this.defineTamanho();
+	};
+	
+	this.defineTamanho = function(){
+		this.cano1Alt = Math.random() * (canvas.height - this.espacoCano);
+		this.cano2Y = this.cano1Alt + this.espacoCano;
+		this.cano2Alt = this.cano2Y==canvas.height ? 0 : canvas.height - this.cano2Y;	
+	};
+
+	this.desenhar = function(){
+		context.fillRect(this.canoX, this.cano1Y, this.canoLarg, this.cano1Alt);
+		context.fillRect(this.canoX, this.cano2Y, this.canoLarg, this.cano2Alt);
+	};
+	
+	this.verificaColisao = function(){		
+		if(jogX+jogLarg >= this.canoX && jogX < this.canoX+this.canoLarg && this.cano1Y+this.cano1Alt >= jogY )
+			return true;
+		if(jogX+jogLarg >= this.canoX && jogX < this.canoX+this.canoLarg && jogY+jogAlt >= this.cano2Y )
+			return true;
+		return false;
+	};
+	
+	this.verificaPassagem = function(){
+		if(jogY > this.cano1Y+this.cano1Alt && jogY+jogAlt < this.cano2Y  && jogX > this.canoX && jogX < this.canoX+this.canoLarg && !this.jaPassou){
+			this.jaPassou = true;
+			return true;
+		}
+		return false;
+	};
+		
+	this.movimenta = function(){
+		if(this.canoX + this.canoLarg <= 0)
+			this.init();
+		else
+			this.canoX -=  this.velX;
+	};
+	
+	this.cano1Y, this.canoLarg, this.espacoCano, this.velX;
+	this.canoX, this.cano1Alt, this.cano2Y, this.cano2Alt, this.jaPassou;
+	this.init();
+}
+
+function initJogador(){
+    jogLarg = 20;
+    jogAlt = 20;
+    jogX = 200;
+    jogY = (canvas.height- jogAlt)/2;
+    velY = 5;
+	pontosJogador = 0;
+}
+
+
 function inicializar(){
 
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
     
-    jogLarg = 20;
-    jogAlt = 20;
-    jogX = 200;
-    jogY = canvas.height/2 - jogAlt/2;
-    velX = 5;
-    velY = 5;
-    
-    cano1X = cano2X = canvas.width;
-    cano1Larg = cano2Larg = 40;
-    espacoCano = 120;
-    cano1Y = 0;
-    defineTamanhoCano();
-    
-    pontosJogador = 0;
-    numCanos = 1;
-    subir = false;
+	initJogador();
+	canos = new Array(new Cano());
+	subir = false;
     countUp = 1;
     MAX_COUNT_UP = 6;
     MAX_COUNT_DOWN = 3;
-
+	distanciaCanosX = canos[0].velX*50;
     if(INIT){
         document.addEventListener('keyup', keyUp);
         setInterval(gameLoop, 30);
-    }
+    }	
 }
 
 function keyUp(e){
@@ -41,58 +94,35 @@ function keyUp(e){
     }
 }
 
-function defineTamanhoCano(){
-    cano1Alt = Math.random() * (canvas.height - espacoCano);
-    cano2Y = cano1Alt + espacoCano;
-    cano2Alt = cano2Y==canvas.height ? 0 : canvas.height - cano2Y;
-}
-
-function desenhar(){
-    //jogador
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillRect(jogX, jogY, jogLarg, jogAlt);
-    //canos
-    context.fillRect(cano1X, cano1Y, cano1Larg, cano1Alt);
-    context.fillRect(cano2X, cano2Y, cano2Larg, cano2Alt);
-    //pontuacao
-    context.font = "32pt Tahoma";
-    context.fillText(pontosJogador, canvas.width - 70, 50);
-}
-
-function verificaColisao(){
-    //se caiu no ch�o
+//verifica se houve colisão e se o personagem ta passando no meio dos canos pra ganhar ponto
+function verificacoes(){
+	//ver se caiu no chão
     if(jogY + jogAlt >= canvas.height)
         return true;
-    //se bateu no teto
-    if(jogY < 0)
+    //ver se bateu no teto
+    if(jogY <= 0)
         jogY = 0;
-    //se colidiu com o cano1
-    if(jogX+jogLarg >= cano1X && jogX < cano1X+cano1Larg && cano1Y+cano1Alt >= jogY )
-        return true;
-    //se colidiu com o cano2
-    if(jogX+jogLarg >= cano2X && jogX < cano2X+cano2Larg && jogY+jogAlt >= cano2Y )
-        return true;  
-    return false; 
+	
+	for(i=0; i<canos.length; i++){
+		//verifica colisão
+		if( canos[i].verificaColisao() )
+			return true;
+		//verifica se ta no meio dos canos pra ganhar ponto
+		if( canos[i].verificaPassagem() ){
+			pontosJogador++;
+			break;
+		}
+	}
+	return false;
 }
 
-function verificaPontuacao(){
-    if(jogY > cano1Y+cano1Alt && jogY+jogAlt < cano2Y  && jogX > cano1X && jogX < cano1X+cano1Larg){
-        if(pontosJogador < numCanos)
-            pontosJogador++;
-    }
-}
-
+//movimenta a todos e desenha os canos, para diminuir o processamento
 function movimenta(){
-    //movimenta os canos
-    if(cano1X + cano1Larg <= 0){
-        cano1X =  canvas.width;
-        cano2X =  canvas.width;
-        defineTamanhoCano();
-        numCanos++;
-    }else{
-        cano1X -=  velX;
-        cano2X -=  velX;
-    }
+    //movimenta os canos e os desenha
+    canos.forEach(function(cano,index){
+		cano.movimenta();
+		cano.desenhar();
+	});
     //movimenta o jogador
     if(subir){
         jogY -= velY*(MAX_COUNT_UP-countUp);
@@ -103,20 +133,30 @@ function movimenta(){
         }
     }else{
         jogY += velY*countUp/2;
-        if(countUp<MAX_COUNT_DOWN)
+        if(countUp<=MAX_COUNT_DOWN)
           countUp++;     
     }
 }
 
+function desenhar(){
+	//limpa a tela
+    context.clearRect(0, 0, canvas.width, canvas.height);
+	//faz as movimentações junto com o desenho por uma questão de desempenho
+	movimenta();//movimenta e desenha os canos
+    //jogador
+	context.fillRect(jogX, jogY, jogLarg, jogAlt);
+    //pontuacao
+    context.font = "32pt Tahoma";
+    context.fillText(pontosJogador, canvas.width - 70, 50);
+}
+
 function gameLoop(){
-    var colisao = verificaColisao();
+    var colisao = verificacoes();
     if(colisao){
         alert("morreu");
         INIT = false;
         inicializar();
         return;
     }
-    verificaPontuacao();
-    movimenta();
     desenhar();
 }
