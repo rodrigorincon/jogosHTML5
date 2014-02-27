@@ -141,17 +141,21 @@ function desenha(){
     context.fillText(pontosJogador+"/"+totalBolas, canvas.width - 200, 50);
 }
 
-function gameLoop(){
-    if(totalBolas >= pontosJogador+50){
-		alert("game over!");
-		bolas.splice(0, bolas.length);
-		alert(bolas.length);
-		bolas = null;
-		inicializar();
-	}
-	
+function isGameOver(){
+	return (totalBolas >= pontosJogador+50);
+}
+
+function gameLoop(){	
 	desenha();
 
+	if(isGameOver()){
+		alert("game over!");
+		bolas.splice(0, bolas.length);
+		bolas = null;
+		inicializar();
+		return;
+	}
+	
     moverBarra(); 
         
     bolas.forEach(function(bola,index){
