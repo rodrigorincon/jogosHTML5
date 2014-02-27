@@ -9,7 +9,7 @@ var subir, countUp, MAX_COUNT_UP, MAX_COUNT_DOWN;
 
 function Cano(){
 
-	//inicializa sÃ³ as constantes e chama a funÃ§Ã£o que inicializa as demais
+	//inicializa só as constantes e chama a função que inicializa as demais
 	this.init = function(){
 	    this.canoX = canvas.width;
 		this.canoLarg = 40;
@@ -46,12 +46,18 @@ function Cano(){
 		}
 		return false;
 	};
-		
+	
+	//retorna true se for pra destruir o objeto (se chegou ao fim da tela)
+	this.eliminar = function(){
+		return (this.canoX + this.canoLarg <= 0);
+	};
+	
+	//retorna true se ja andou o suficiente pra vir o proximo cano
 	this.movimenta = function(){
-		if(this.canoX + this.canoLarg <= 0)
-			this.init();
-		else
-			this.canoX -=  this.velX;
+		this.canoX -=  this.velX;
+		if(this.canoX == canvas.width - distanciaCanosX)
+			return true;
+		return false;
 	};
 	
 	this.cano1Y, this.canoLarg, this.espacoCano, this.velX;
@@ -68,7 +74,7 @@ function initJogador(){
 	pontosJogador = 0;
 }
 
-
+         
 function inicializar(){
 
     canvas = document.getElementById("canvas");
@@ -76,11 +82,13 @@ function inicializar(){
     
 	initJogador();
 	canos = new Array(new Cano());
+
 	subir = false;
     countUp = 1;
     MAX_COUNT_UP = 6;
     MAX_COUNT_DOWN = 3;
 	distanciaCanosX = canos[0].velX*50;
+
     if(INIT){
         document.addEventListener('keyup', keyUp);
         setInterval(gameLoop, 30);
@@ -94,9 +102,9 @@ function keyUp(e){
     }
 }
 
-//verifica se houve colisÃ£o e se o personagem ta passando no meio dos canos pra ganhar ponto
+//verifica se houve colisão e se o personagem ta passando no meio dos canos pra ganhar ponto
 function verificacoes(){
-	//ver se caiu no chÃ£o
+	//ver se caiu no chão
     if(jogY + jogAlt >= canvas.height)
         return true;
     //ver se bateu no teto
@@ -104,7 +112,7 @@ function verificacoes(){
         jogY = 0;
 	
 	for(i=0; i<canos.length; i++){
-		//verifica colisÃ£o
+		//verifica colisão
 		if( canos[i].verificaColisao() )
 			return true;
 		//verifica se ta no meio dos canos pra ganhar ponto
@@ -119,10 +127,16 @@ function verificacoes(){
 //movimenta a todos e desenha os canos, para diminuir o processamento
 function movimenta(){
     //movimenta os canos e os desenha
-    canos.forEach(function(cano,index){
-		cano.movimenta();
-		cano.desenhar();
-	});
+    for(i=0; i<canos.length; i++){
+		if(canos[i].eliminar()){
+			canos.splice(i, 1);
+			i--;
+			continue;
+		}
+		if( canos[i].movimenta() )
+			canos.push(new Cano());
+		canos[i].desenhar();
+	}
     //movimenta o jogador
     if(subir){
         jogY -= velY*(MAX_COUNT_UP-countUp);
@@ -141,7 +155,7 @@ function movimenta(){
 function desenhar(){
 	//limpa a tela
     context.clearRect(0, 0, canvas.width, canvas.height);
-	//faz as movimentaÃ§Ãµes junto com o desenho por uma questÃ£o de desempenho
+	//faz as movimentações junto com o desenho por uma questão de desempenho
 	movimenta();//movimenta e desenha os canos
     //jogador
 	context.fillRect(jogX, jogY, jogLarg, jogAlt);
