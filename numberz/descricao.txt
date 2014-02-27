@@ -1,1 +1,7 @@
-﻿Coloque os números em ordem crescente arrastando as peças para o espaço em branco.
+Coloque os números em ordem crescente arrastando as peças para o espaço em branco. Escolha o nível de dificuldade e monte a tabela. 
+Os melhores resultados serão gravados num ranking. Em caso de desistência o computador pode te mostrar a resolução.
+
+===
+Teclas utilizadas:
+
+setas direcionais: move um número adjacente para o espaço vazio.

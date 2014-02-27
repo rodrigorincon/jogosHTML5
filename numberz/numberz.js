@@ -1,16 +1,49 @@
-var init = ['1','2','3','4','5','6','7','8',' '];
-var matriz=[ [,,],[,,],[,,] ];
-var vazioI, vazioJ, numJogadas;
+var init;
+var matriz;
+var vazioI, vazioJ, numJogadas, TAMANHO_QUADRO;
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1) {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) {
+                c_end = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(c_start, c_end));
+        }
+    }
+    return "";
+}
+
+function defineNivel(){
+   param = getCookie('TAM_QUADRO');
+   TAMANHO_QUADRO = param;
+   init = new Array(Math.pow(param,2));
+   for(i=0; i<init.length-1; i++){
+      init[i] = i+1;
+   }
+   init[init.length-1] = ' ';
+   matriz=new Array(param);
+   for(i=0; i<param; i++)
+      matriz[i] = new Array(param);    
+}
         
 function inicializar(){
+    defineNivel();
     
     canvas = document.getElementById("canvas");
+    canvas.style.height = 100*TAMANHO_QUADRO;
+    canvas.style.width = 100*TAMANHO_QUADRO;
     context = canvas.getContext("2d");
+    var fontText = 120/TAMANHO_QUADRO;
+    context.font = Math.round(fontText)+"pt Tahoma";
      
     embaralhar();
     
-    for(i=0; i<3; i++){
-        for(j=0; j<3; j++){
+    for(i=0; i<TAMANHO_QUADRO; i++){
+        for(j=0; j<TAMANHO_QUADRO; j++){
             if(matriz[i][j] == ' '){
                 vazioI = i;
                 vazioJ = j;
@@ -47,8 +80,8 @@ function FisherYatesShuffle(){
 function embaralhar(){
     var vetor = FisherYatesShuffle();
     var k=0;
-    for(i=0; i<3; i++){
-        for(j=0; j<3; j++){
+    for(i=0; i<TAMANHO_QUADRO; i++){
+        for(j=0; j<TAMANHO_QUADRO; j++){
             matriz[i][j] = vetor[k];
             k++;
         }
@@ -57,10 +90,9 @@ function embaralhar(){
 
 function desenhar(){
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.font = "40pt Tahoma";
-    for(i=0;i<3;i++)
-      for(j=0;j<3;j++)
-        context.fillText(matriz[i][j], j*100, i*100+50);
+    for(i=0;i<TAMANHO_QUADRO;i++)
+      for(j=0;j<TAMANHO_QUADRO;j++)
+        context.fillText(matriz[i][j], j*300/TAMANHO_QUADRO, i*300/TAMANHO_QUADRO+50);
     document.getElementById("jogadas").innerHTML = numJogadas;
 }
 
@@ -68,7 +100,7 @@ function keyDown(e){
 
     switch(e.keyCode){
     case 37:
-        if(vazioJ!=2){
+        if(vazioJ!=TAMANHO_QUADRO-1){
             matriz[vazioI][vazioJ] = matriz[vazioI][vazioJ+1];
             matriz[vazioI][vazioJ+1] = ' ';
             vazioJ +=1; 
@@ -76,7 +108,7 @@ function keyDown(e){
         }
         break;
     case 38:
-        if(vazioI!=2){
+        if(vazioI!=TAMANHO_QUADRO-1){
             matriz[vazioI][vazioJ] = matriz[vazioI+1][vazioJ];
             matriz[vazioI+1][vazioJ] = ' ';
             vazioI +=1; 
@@ -106,9 +138,9 @@ function keyDown(e){
 }
 
 function verificarVitoria(){
-    var k=0, tamLinha = Math.sqrt(init.length);
-    for(i=0; i<tamLinha; i++){
-        for(j=0; j<tamLinha; j++){
+    var k=0;
+    for(i=0; i<TAMANHO_QUADRO; i++){
+        for(j=0; j<TAMANHO_QUADRO; j++){
             if(matriz[i][j] != init[k])
               return false;
             k++;
