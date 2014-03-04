@@ -43,7 +43,7 @@ function ranking(cv, ctx, nomeJogo, pontuacao){
 			
 		//reescreve o vetor e os valores locais na ordem correta inserindo o valor atual
 		if(numNovoValor!=-1){
-			var nome = prompt("digite seu nome");
+			var nome = prompt("Parabéns! Voce ficou em "+(numNovoValor+1)+"\nDigite seu nome");
 			var novo = {'nome':nome,'pontos':pontuacao};
 			var anterior = rank[numNovoValor] ? rank[numNovoValor] : null;
 			rank[numNovoValor] = novo;
