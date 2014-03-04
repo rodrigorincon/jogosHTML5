@@ -1,5 +1,5 @@
 var init;
-var matriz;
+var matriz, fontText;
 var vazioI, vazioJ, numJogadas, TAMANHO_QUADRO;
 
 function getCookie(c_name) {
@@ -29,16 +29,24 @@ function defineNivel(){
    for(i=0; i<param; i++)
       matriz[i] = new Array(param);    
 }
-        
-function inicializar(){
+
+function start(){
+localStorage.clear();
     defineNivel();
     
     canvas = document.getElementById("canvas");
     canvas.style.height = 100*TAMANHO_QUADRO;
     canvas.style.width = 100*TAMANHO_QUADRO;
     context = canvas.getContext("2d");
-    var fontText = 120/TAMANHO_QUADRO;
-    context.font = Math.round(fontText)+"pt Tahoma";
+    fontText = Math.round(120/TAMANHO_QUADRO);
+    document.addEventListener('keydown', keyDown);
+	
+	inicializar();
+}
+        
+function inicializar(){
+
+    context.font = fontText+"pt Tahoma";
      
     embaralhar();
     
@@ -53,8 +61,6 @@ function inicializar(){
     } 
     numJogadas = 0;
     desenhar(); 
-
-    document.addEventListener('keydown', keyDown);
 }
 
 function FisherYatesShuffle(){
@@ -78,7 +84,8 @@ function FisherYatesShuffle(){
 }
 
 function embaralhar(){
-    var vetor = FisherYatesShuffle();
+//    var vetor = FisherYatesShuffle();
+var vetor = [ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,' ' ];
     var k=0;
     for(i=0; i<TAMANHO_QUADRO; i++){
         for(j=0; j<TAMANHO_QUADRO; j++){
@@ -90,7 +97,7 @@ function embaralhar(){
 
 function desenhar(){
     context.clearRect(0, 0, canvas.width, canvas.height);
-    for(i=0;i<TAMANHO_QUADRO;i++)
+	for(i=0;i<TAMANHO_QUADRO;i++)
       for(j=0;j<TAMANHO_QUADRO;j++)
         context.fillText(matriz[i][j], j*300/TAMANHO_QUADRO, i*300/TAMANHO_QUADRO+50);
     document.getElementById("jogadas").innerHTML = numJogadas;
@@ -152,10 +159,8 @@ function verificarVitoria(){
 }
 
 function resetar(){
-    alert("Parabéns! Você conseguiu com "+numJogadas+" pontos.");
-    numJogadas=0;
-    embaralhar();
-    desenhar();
+    rankingInverso(canvas,context,'numberz'+TAMANHO_QUADRO,numJogadas);
+	inicializar();
 }
 
 function resolver(){
