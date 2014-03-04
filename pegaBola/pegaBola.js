@@ -142,7 +142,7 @@ function desenha(){
 }
 
 function isGameOver(){
-	return (totalBolas >= pontosJogador+50);
+	return (totalBolas >= pontosJogador+5);
 }
 
 function gameLoop(){	
@@ -150,6 +150,7 @@ function gameLoop(){
 
 	if(isGameOver()){
 		alert("game over!");
+		ranking(canvas,context,'pegaBola',pontosJogador);
 		bolas.splice(0, bolas.length);
 		bolas = null;
 		inicializar();
