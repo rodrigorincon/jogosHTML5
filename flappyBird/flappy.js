@@ -155,6 +155,7 @@ function gameLoop(){
     var colisao = verificacoes();
     if(colisao){
         alert("morreu");
+		ranking(canvas, context, 'flappyBird', pontosJogador);
         inicializar();
         return;
     }
