@@ -40,8 +40,7 @@ localStorage.clear();
     context = canvas.getContext("2d");
     fontText = Math.round(120/TAMANHO_QUADRO);
     document.addEventListener('keydown', keyDown);
-	
-	inicializar();
+    inicializar();
 }
         
 function inicializar(){
@@ -84,8 +83,7 @@ function FisherYatesShuffle(){
 }
 
 function embaralhar(){
-//    var vetor = FisherYatesShuffle();
-var vetor = [ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,' ' ];
+    var vetor = FisherYatesShuffle();
     var k=0;
     for(i=0; i<TAMANHO_QUADRO; i++){
         for(j=0; j<TAMANHO_QUADRO; j++){
