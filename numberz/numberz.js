@@ -161,6 +161,3 @@ function resetar(){
 	inicializar();
 }
 
-function resolver(){
-    //por o codigo aki
-}
